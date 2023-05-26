@@ -1,0 +1,31 @@
+﻿@page "/Garantias/Nuevo_Garantia"
+@inject HttpClient http
+@inject NavigationManager navegator
+@using Actividad17.Shared.Models
+
+<h3>Nueva Garantia</h3>
+<EditForm Model="cli" OnValidSubmit="Agregar">
+    <DataAnnotationsValidator />
+
+    <div class="mb-3">
+        <label for="dtVigencia" class="form-label">Vigencia</label>
+        <InputDate id="dtVigencia" class="form-control" @bind-Value="cli.Vigencia" />
+    </div>
+    <div class="mb-3">
+        <label for="numIdServicio" class="form-label">Id del Servicio</label>
+        <InputNumber id="numIdServicio" class="form-control" @bind-Value="cli.ServiciosId" />
+    </div>
+    <button type="submit" class="btn btn-primary">Guardar</button>
+</EditForm>
+
+
+@code {
+    private Garantias cli = new Garantias();
+    private async void Agregar()
+    {
+        cli.FechaG = DateTime.Now;
+        await http.PostAsJsonAsync("api/Garantias", cli);
+        navegator.NavigateTo("/garantias");
+    }
+}
+

@@ -1,0 +1,36 @@
+﻿@page "/Servicios/Editar_Servicio/{Id:int}"
+@inject HttpClient http
+@inject NavigationManager navegator
+@using Actividad17.Shared.Models
+
+<h3>Editar Servicio</h3>
+<EditForm Model="cli" OnValidSubmit="Editar">
+    <DataAnnotationsValidator />
+    <div class="mb-3">
+        <label for="dtVigencia" class="form-label">Fecha</label>
+        <InputDate id="dtVigencia" class="form-control" @bind-Value="cli.Fecha" />
+    </div>
+    <div class="mb-3">
+        <label for="numIdServicio" class="form-label">Id del Servicio</label>
+        <InputNumber id="numIdServicio" class="form-control" @bind-Value="cli.ClientesId" />
+    </div>
+    <button type="submit" class="btn btn-primary">Guardar</button>
+</EditForm>
+
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+    private Servicios cli = new Servicios();
+
+    protected override async Task OnInitializedAsync()
+    {
+        cli = await http.GetFromJsonAsync<Servicios>($"api/Servicios/{Id}");
+    }
+
+    private async void Editar()
+    {
+        await http.PutAsJsonAsync($"api/Servicios/{Id}", cli);
+        navegator.NavigateTo("/servicios");
+    }
+}
