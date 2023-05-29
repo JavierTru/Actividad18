@@ -11,7 +11,8 @@ namespace Actividad17.Shared.Models
         public int Id { get; set; }
         public string Nombre { get; set; }
         public string Domicilio { get; set; }
-        public string Telefono { get; set; }
+        public string Telefono { get; set; } 
+        //vincular todos los servicios a los clientes
         public virtual ICollection<Servicios>? Servicios { get; set; }
     }
 }

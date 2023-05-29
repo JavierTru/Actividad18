@@ -15,7 +15,9 @@ namespace Actividad17.Shared.Models
         public DateTime Fecha { get; set; }
 
         public int? ClientesId { get; set; }
+        //Vincular con el cliente
         public virtual Clientes? Clientes { get; set; }
+        //garantias 
         public virtual ICollection<Garantias>? Garantias { get; set;}
     }
 }

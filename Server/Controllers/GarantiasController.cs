@@ -25,30 +25,30 @@ namespace Actividad17.Server.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Garantias>>> GetGarantias()
         {
-          if (_context.Garantias == null)
-          {
-              return NotFound();
-          }
-            var servicios = await _context.Garantias.Include(s => s.Servicios).ToListAsync();
-            return servicios;
+            if (_context.Garantias == null)
+            {
+                return NotFound();
+            }
+
+            var garantias = await _context.Garantias.Include(g => g.Servicios).ToListAsync();
+            return garantias;
         }
 
         // GET: api/Garantias/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Garantias>> GetGarantias(int id)
         {
-          if (_context.Garantias == null)
-          {
-              return NotFound();
-          }
+            if (_context.Garantias == null)
+            {
+                return NotFound();
+            }
 
-            var garantias = await _context.Garantias.Include(s => s.Servicios).FirstOrDefaultAsync(s => s.Id == id);
+            var garantias = await _context.Garantias.Include(g => g.Servicios).FirstOrDefaultAsync(g => g.Id == id);
 
             if (garantias == null)
             {
                 return NotFound();
             }
-
 
             return garantias;
         }
@@ -89,10 +89,23 @@ namespace Actividad17.Server.Controllers
         [HttpPost]
         public async Task<ActionResult<Garantias>> PostGarantias(Garantias garantias)
         {
-          if (_context.Garantias == null)
-          {
-              return Problem("Entity set 'ContextoLimpieza.Garantias'  is null.");
-          }
+            if (_context.Garantias == null)
+            {
+                return Problem("Entity set 'ContextoLimpieza.Garantias' is null.");
+            }
+
+            var servicio = await _context.Servicios.Include(s => s.Garantias).FirstOrDefaultAsync(s => s.Id == garantias.ServiciosId);
+
+            if (servicio == null)
+            {
+                return NotFound("No se encontró el servicio al que se quiere vincular la garantía.");
+            }
+
+            if (servicio.Garantias != null && servicio.Garantias.Any())
+            {
+                return BadRequest("El servicio ya tiene una garantía vinculada.");
+            }
+
             _context.Garantias.Add(garantias);
             await _context.SaveChangesAsync();
 
@@ -107,7 +120,9 @@ namespace Actividad17.Server.Controllers
             {
                 return NotFound();
             }
+
             var garantias = await _context.Garantias.FindAsync(id);
+
             if (garantias == null)
             {
                 return NotFound();

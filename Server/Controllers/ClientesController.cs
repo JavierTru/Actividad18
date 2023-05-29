@@ -40,10 +40,11 @@ namespace Actividad17.Server.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Clientes>> GetClientes(int id)
         {
-          if (_context.Clientes == null)
-          {
-              return NotFound();
-          }
+            if (_context.Clientes == null)
+            {
+                return NotFound();
+            }
+
             var clientes = await _context.Clientes.FindAsync(id);
 
             if (clientes == null)
@@ -90,10 +91,11 @@ namespace Actividad17.Server.Controllers
         [HttpPost]
         public async Task<ActionResult<Clientes>> PostClientes(Clientes clientes)
         {
-          if (_context.Clientes == null)
-          {
-              return Problem("Entity set 'ContextoLimpieza.Clientes'  is null.");
-          }
+            if (_context.Clientes == null)
+            {
+                return Problem("Entity set 'ContextoLimpieza.Clientes' is null.");
+            }
+
             _context.Clientes.Add(clientes);
             await _context.SaveChangesAsync();
 
@@ -108,10 +110,25 @@ namespace Actividad17.Server.Controllers
             {
                 return NotFound();
             }
-            var clientes = await _context.Clientes.FindAsync(id);
+
+            var clientes = await _context.Clientes.Include(c => c.Servicios).ThenInclude(t => t.Garantias).FirstOrDefaultAsync(c => c.Id == id);
             if (clientes == null)
             {
                 return NotFound();
+            }
+
+            // Eliminar los servicios vinculados y las garantías vinculadas a esos servicios
+            if (clientes.Servicios != null)
+            {
+                foreach (var servicio in clientes.Servicios)
+                {
+                    if (servicio.Garantias != null)
+                    {
+                        _context.Garantias.RemoveRange(servicio.Garantias);
+                    }
+                }
+
+                _context.Servicios.RemoveRange(clientes.Servicios);
             }
 
             _context.Clientes.Remove(clientes);

@@ -12,6 +12,7 @@ namespace Actividad17.Shared.Models
         public DateTime FechaG { get; set; }
         public DateTime Vigencia { get; set; }
 
+        //a que servicio va vinculado
         public int? ServiciosId { get; set; }
         public virtual Servicios? Servicios { get; set; }
     }
